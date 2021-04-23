@@ -93,7 +93,6 @@ MainWindow::MainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmd
 	ss << __FUNCTION__ << ": just after CreateWindow hWndMain: " << hWndMain << std::endl;
 	OutputDebugStringA(ss.str().c_str());
 	tempstr = ss.str();
-
 }
 
 ATOM MainWindow::RegMyWindowClass(HINSTANCE hInst, LPCTSTR lpzClassName, WNDPROC wndproc) {
@@ -138,7 +137,7 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 		case CLOSECONSOLEBTN_ID:
 			MessageBox(hWnd, TEXT("close"), TEXT("WM_COMMAND"), 0);
-			//std::cout << "hWnd: " << hWnd << " | mw.getCreateConsoleBtn() returned: " << mw.getCreateConsoleBtn() << std::endl;
+			std::cout << "hWnd: " << hWnd << " | mw.getCloseConsoleBtn() returned: " << mw.getCloseConsoleBtn() << std::endl;
 			break;
 		}
 		break;
@@ -218,4 +217,8 @@ HWND MainWindow::getHWndMain() const {
 
 HWND MainWindow::getCreateConsoleBtn() const {
 	return createConsoleBtn;
+}
+
+HWND MainWindow::getCloseConsoleBtn() const {
+	return closeConsoleBtn;
 }

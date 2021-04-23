@@ -39,6 +39,7 @@ public:
 
 	HWND getHWndMain() const;
 	HWND getCreateConsoleBtn() const;
+	HWND getCloseConsoleBtn() const;
 
 	static ATOM RegMyWindowClass(HINSTANCE hInst, LPCTSTR lpzClassName, WNDPROC wndproc);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

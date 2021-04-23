@@ -3,7 +3,7 @@
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	try {
-		mw = std::move(MainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow));
+		mw = MainWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 		std::ostringstream ss;
 		ss << __FUNCTION__ << ": " << mw.getHWndMain() << std::endl;
 		ss << __FUNCTION__ << ": &mw == " << &mw << std::endl;
