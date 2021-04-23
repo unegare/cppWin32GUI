@@ -131,7 +131,16 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		MessageBox(hWnd, TEXT("There's been a click!"), TEXT("en event"), 0);
 		break;
 	case WM_COMMAND:
-		MessageBox(hWnd, TEXT("WM_COMMAND"), TEXT("WM_COMMAND title"), 0);
+		switch (LOWORD(wParam)) {
+		case CREATECONSOLEBTN_ID:
+			MessageBox(hWnd, TEXT("WM_COMMAND"), TEXT("WM_COMMAND title"), 0);
+			std::cout << "hWnd: " << hWnd << " | mw.getCreateConsoleBtn() returned: " << mw.getCreateConsoleBtn() << std::endl;
+			break;
+		case CLOSECONSOLEBTN_ID:
+			MessageBox(hWnd, TEXT("close"), TEXT("WM_COMMAND"), 0);
+			//std::cout << "hWnd: " << hWnd << " | mw.getCreateConsoleBtn() returned: " << mw.getCreateConsoleBtn() << std::endl;
+			break;
+		}
 		break;
 	case WM_DESTROY:
 		if (init) {
@@ -153,11 +162,14 @@ void MainWindow::onWmCreate(HWND hWnd) {
 	std::cout << "hWndMain: " << hWndMain << " | hWnd: " << hWnd << std::endl;
 	std::cout << "tmpstr = \"" << tempstr << "\"" << std::endl;
 
-	createConsoleBtn = CreateWindow(L"BUTTON", L"OK", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+	createConsoleBtn = CreateWindow(L"BUTTON", L"createButton", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		10, 10, 100, 100,
-		hWnd, NULL,
+		hWnd, (HMENU)CREATECONSOLEBTN_ID,
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL);
-
+	closeConsoleBtn = CreateWindow(L"BUTTON", L"closeButton", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		120, 10, 100, 100,
+		hWnd, (HMENU)CLOSECONSOLEBTN_ID,
+		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL);
 
 	int Data = 0;
 	HANDLE th1 = CreateThread(NULL, 0, threadMainFunc, &Data, 0, NULL);
@@ -202,4 +214,8 @@ DWORD WINAPI MainWindow::threadMainFunc(LPVOID lpParam) {
 
 HWND MainWindow::getHWndMain() const {
 	return hWndMain;
+}
+
+HWND MainWindow::getCreateConsoleBtn() const {
+	return createConsoleBtn;
 }

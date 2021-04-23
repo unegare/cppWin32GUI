@@ -10,6 +10,9 @@
 #include <stdexcept>
 #include <exception>
 
+#define CREATECONSOLEBTN_ID 0x401
+#define CLOSECONSOLEBTN_ID 0x402
+
 class MainWindow
 {
 	HINSTANCE _hInstance;
@@ -35,6 +38,7 @@ public:
 	void onWmCreate(HWND hWnd);
 
 	HWND getHWndMain() const;
+	HWND getCreateConsoleBtn() const;
 
 	static ATOM RegMyWindowClass(HINSTANCE hInst, LPCTSTR lpzClassName, WNDPROC wndproc);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
