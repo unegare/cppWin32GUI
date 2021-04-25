@@ -36,6 +36,7 @@ MainWindow& MainWindow::operator= (MainWindow&& _mw) {
 	subThreads = std::move(_mw.subThreads);
 	createConsoleBtn = std::move(_mw.createConsoleBtn);
 	closeConsoleBtn = std::move(_mw.closeConsoleBtn);
+	createThreadBtn = std::move(_mw.createThreadBtn);
 	comboBox = std::move(_mw.comboBox);
 	listBox = std::move(_mw.listBox);
 	tempstr = std::move(_mw.tempstr);
