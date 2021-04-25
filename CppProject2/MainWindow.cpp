@@ -20,7 +20,7 @@ MainWindow::MainWindow(MainWindow&& _mw) :
 	comboBox{ std::move(_mw.comboBox) },
 	listBox{ std::move(_mw.listBox) },
 	tempstr{ std::move(_mw.tempstr) },
-	consoleIsAllocated{false}
+	consoleIsAllocated{ std::move(_mw.consoleIsAllocated) }
 {
 	OutputDebugStringA("MOVE CONSTRUCTOR\n");
 }
@@ -44,8 +44,10 @@ MainWindow& MainWindow::operator= (MainWindow&& _mw) {
 	std::ostringstream oss;
 	oss << __FUNCTION__ << ": &mw == " << &mw << std::endl;
 	OutputDebugStringA(oss.str().c_str());
-	std::cout << "MOVE operator=" << std::endl;
-	std::cout << "BEGIN\n" << "createConsoleBtn: " << createConsoleBtn << "\n_mw.createConsoleBtn: " << _mw.createConsoleBtn << "\nEND" << std::endl;
+	if (consoleIsAllocated) {
+		std::cout << "MOVE operator=" << std::endl;
+		std::cout << "BEGIN\n" << "createConsoleBtn: " << createConsoleBtn << "\n_mw.createConsoleBtn: " << _mw.createConsoleBtn << "\nEND" << std::endl;
+	}
 	return *this;
 }
 
