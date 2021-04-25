@@ -12,6 +12,7 @@
 
 #define CREATECONSOLEBTN_ID 0x401
 #define CLOSECONSOLEBTN_ID 0x402
+#define COMBOBOX_ID 0x403
 
 class MainWindow
 {
@@ -26,6 +27,7 @@ class MainWindow
 
 	HWND createConsoleBtn;
 	HWND closeConsoleBtn;
+	HWND comboBox;
 
 	std::string tempstr;
 public:
@@ -40,10 +42,14 @@ public:
 	HWND getHWndMain() const;
 	HWND getCreateConsoleBtn() const;
 	HWND getCloseConsoleBtn() const;
+	HWND getComboBox() const;
 
 	static ATOM RegMyWindowClass(HINSTANCE hInst, LPCTSTR lpzClassName, WNDPROC wndproc);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static DWORD WINAPI threadMainFunc(LPVOID lpParam);
+
+	static std::string utf8_encode(const std::wstring& wstr);
+	static std::wstring utf8_decode(const std::string& str);
 };
 
 extern MainWindow mw;

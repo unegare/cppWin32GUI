@@ -16,6 +16,7 @@ MainWindow::MainWindow(MainWindow&& _mw) :
 	subThreads{std::move(_mw.subThreads)},
 	createConsoleBtn{std::move(_mw.createConsoleBtn)},
 	closeConsoleBtn{std::move(_mw.closeConsoleBtn)},
+	comboBox{std::move(_mw.comboBox)},
 	tempstr{std::move(_mw.tempstr)}
 {
 	OutputDebugStringA("MOVE CONSTRUCTOR\n");
@@ -32,6 +33,7 @@ MainWindow& MainWindow::operator= (MainWindow&& _mw) {
 	subThreads = std::move(_mw.subThreads);
 	createConsoleBtn = std::move(_mw.createConsoleBtn);
 	closeConsoleBtn = std::move(_mw.closeConsoleBtn);
+	comboBox = std::move(_mw.comboBox);
 	tempstr = std::move(_mw.tempstr);
 	std::ostringstream oss;
 	oss << __FUNCTION__ << ": &mw == " << &mw << std::endl;
@@ -82,11 +84,13 @@ MainWindow::MainWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmd
 	}
 	RECT screen_rect;
 	GetWindowRect(GetDesktopWindow(), &screen_rect);
-	int x = screen_rect.right / 2 - 150;
-	int y = screen_rect.bottom / 2 - 75;
+	int w = 500;
+	int h = 300;
+	int x = (screen_rect.right - w) / 2;
+	int y = (screen_rect.bottom - h) / 2;
 
 	hWndMain = CreateWindow(lpzClass, TEXT("Main Window"), WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		x, y, 300, 150,
+		x, y, w, h,
 		NULL, NULL, _hInstance, NULL);
 	if (!hWndMain) throw std::runtime_error("CreateWindow failure");
 	std::ostringstream ss;
@@ -139,7 +143,43 @@ LRESULT CALLBACK MainWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			MessageBox(hWnd, TEXT("close"), TEXT("WM_COMMAND"), 0);
 			std::cout << "hWnd: " << hWnd << " | mw.getCloseConsoleBtn() returned: " << mw.getCloseConsoleBtn() << std::endl;
 			break;
+		case COMBOBOX_ID:
+			std::cout << "hWnd: " << hWnd << " | mw.getComboBox() returned: " << mw.getComboBox() << std::endl;
+			switch (HIWORD(wParam)) {
+			case CBN_DROPDOWN:
+				std::cout << "CBN_DROPDOWN" << std::endl;
+				break;
+			case CBN_CLOSEUP:
+				std::cout << "CBN_CLOSEUP" << std::endl;
+				break;
+			case CBN_SELENDCANCEL:
+				std::cout << "CBN_SELENDCANCEL" << std::endl;
+				break;
+			case CBN_SELENDOK:
+				std::cout << "CBN_SELENDOK" << std::endl;
+				break;
+			case CBN_SETFOCUS:
+				std::cout << "CBN_SETFOCUS" << std::endl;
+				break;
+			case CBN_KILLFOCUS:
+				std::cout << "CBN_KILLFOCUS" << std::endl;
+				break;
+			case CBN_SELCHANGE:
+				int ItemIndex = SendMessage((HWND)lParam, (UINT)CB_GETCURSEL, 
+					(WPARAM)0, (LPARAM)0);
+				TCHAR ListItem[256];
+				(TCHAR)SendMessage((HWND)lParam, (UINT)CB_GETLBTEXT, (WPARAM)ItemIndex, (LPARAM)ListItem);
+				std::wstringstream oss;
+				oss << ListItem << std::endl;
+				//MessageBox(hWnd, (LPCWSTR)ListItem, L"Item selected", MB_OK);
+				std::cout << "ItemSelected: \"" << utf8_encode(ListItem) << "\"" << std::endl;
+				break;
+			}
+			break;
 		}
+		break;
+	case WM_DRAWITEM:
+		std::cout << "hWnd: " << hWnd << " | WM_DRAWITEM" << std::endl;
 		break;
 	case WM_DESTROY:
 		if (init) {
@@ -169,6 +209,18 @@ void MainWindow::onWmCreate(HWND hWnd) {
 		120, 10, 100, 100,
 		hWnd, (HMENU)CLOSECONSOLEBTN_ID,
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL);
+
+	comboBox = CreateWindow(L"COMBOBOX", NULL, CBS_DROPDOWN | WS_CHILD | WS_VISIBLE,
+		230, 10, 100, 100,
+		hWnd, (HMENU)COMBOBOX_ID,
+		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), NULL);
+
+	TCHAR NamesList[2][50] = {L"First value", L"Second value"};
+
+	for (int index = 0; index < 2; index++) {
+		SendMessage(comboBox, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)NamesList[index]);
+	}
+	SendMessage(comboBox, CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 
 	int Data = 0;
 	HANDLE th1 = CreateThread(NULL, 0, threadMainFunc, &Data, 0, NULL);
@@ -221,4 +273,24 @@ HWND MainWindow::getCreateConsoleBtn() const {
 
 HWND MainWindow::getCloseConsoleBtn() const {
 	return closeConsoleBtn;
+}
+
+HWND MainWindow::getComboBox() const {
+	return comboBox;
+}
+
+std::string MainWindow::utf8_encode(const std::wstring& wstr) {
+	if (wstr.empty()) return std::string();
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), (int)wstr.size(), NULL, 0, NULL, NULL);
+	std::string str(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wstr.data(), (int)wstr.size(), str.data(), size_needed, NULL, NULL);
+	return str;
+}
+
+std::wstring MainWindow::utf8_decode(const std::string& str) {
+	if (str.empty()) return std::wstring();
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
+	std::wstring wstr(size_needed, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), wstr.data(), size_needed);
+	return wstr;
 }
